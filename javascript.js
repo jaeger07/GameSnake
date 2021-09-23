@@ -8,31 +8,31 @@
         
         const vel = 1;
         
-        var vx = vy = 0;
-        var px = 10;
-        var py = 15;
-        var tp = 20;
-        var qp = 30;
-        var ax=ay=15;
+        var velocidadeX = velocidadeY = 0; //Velocidade inicial de X e Y
+        var snakeX = 10;     //Ponto inicial X da Cobra
+        var snakeY = 15;     //Ponto inicial Y da Cobra
+        var tamanhoBlocos = 20;     //Tamanho dos blocos em pixel
+        var numeroBlocos = 30;      //Quantidade de blocos
+        var redPointX = redPointY = 15; // Posição inicial da Maça 
         
         var trail = [];
-        tail= 5;
+        tamanhoSnake= 5;
         
         function game (){
         
-            px += vx;
-            py += vy;
-            if(px<0){
-                px = qp-1;
+            snakeX += velocidadeX;
+            snakeY += velocidadeY;
+            if(snakeX<0){
+                snakeX = numeroBlocos-1;
             }
-            if(px > qp-1){
-                px =0;
+            if(snakeX > numeroBlocos-1){
+                snakeX =0;
             }
-            if(py<0){
-                py = qp-1;
+            if(snakeY<0){
+                snakeY = numeroBlocos-1;
             }
-            if(py > qp-1){
-                py=0;
+            if(snakeY > numeroBlocos-1){
+                snakeY=0;
             }
             
         
@@ -40,26 +40,27 @@
             ctx.fillRect(0,0, stage.width, stage.height);
         
             ctx.fillStyle = "red";
-            ctx.fillRect(ax*tp, ay*tp, tp,tp);
+            ctx.fillRect(redPointX*tamanhoBlocos, redPointY*tamanhoBlocos, tamanhoBlocos,tamanhoBlocos);
         
             ctx.fillStyle = 'gray';
             for (var i = 0; i < trail.length; i++) {
-                ctx.fillRect(trail[i].x*tp, trail[i].y*tp, tp,tp);
+                ctx.fillRect(trail[i].x*tamanhoBlocos, trail[i].y*tamanhoBlocos,
+                     tamanhoBlocos-1,tamanhoBlocos-1);
         
-                if(trail[i].x == px && trail[i].y == py){
-                    vx = vy=0;
-                    tail =5;
+                if(trail[i].x == snakeX && trail[i].y == snakeY){
+                    velocidadeX = velocidadeY=0;
+                    tamanhoSnake =5;
                 }  
             }
         
-            trail.push({x:px,y:py})
-            while (trail.length > tail){
+            trail.push({x:snakeX,y:snakeY})
+            while (trail.length > tamanhoSnake){
                 trail.shift();
             }
-            if(ax==px && ay==py){
-                tail++;
-                ax = Math.floor(Math.random()*qp);
-                ay = Math.floor(Math.random()*qp);
+            if(redPointX==snakeX && redPointY==snakeY){
+                tamanhoSnake++;
+                redPointX = Math.floor(Math.random()*numeroBlocos);
+                redPointY = Math.floor(Math.random()*numeroBlocos);
                 
             }
         }
@@ -68,23 +69,23 @@
         
             switch (event.keyCode) {
                 case 37: //Left
-                    vx = -vel;
-                    vy = 0;
+                    velocidadeX = -vel;
+                    velocidadeY = 0;
                 break;
             
                 case 38: //up
-                    vx = 0;
-                    vy = -vel;
+                    velocidadeX = 0;
+                    velocidadeY = -vel;
                 break;
             
                 case 39: //right
-                    vx = vel;
-                    vy = 0
+                    velocidadeX = vel;
+                    velocidadeY = 0
                 break;
             
                 case 40: //down
-                    vx = 0;
-                    vy = vel
+                    velocidadeX = 0;
+                    velocidadeY = vel
                 break;
             
                 default:
