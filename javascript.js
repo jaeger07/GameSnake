@@ -3,20 +3,24 @@ window.onload = () => {
 
 let stage = document.getElementById('stage');
 let ctx = stage.getContext('2d');
-document.addEventListener("keydown",keyPush);
 setInterval(game, 100);
+let gamePaused =false;
+ 
+document.addEventListener("keydown",keyPush);
 
 const vel = 1;
 
-let velocidadeX = velocidadeY = 0; //Velocidade inicial de X e Y
-let snakeX = 10;     //Ponto inicial X da Cobra
-let snakeY = 15;     //Ponto inicial Y da Cobra
-let tamanhoBlocos = 20;     //Tamanho dos blocos em pixel
-let numeroBlocos = 30;      //Quantidade de blocos
-let redPointX = redPointY = 15; // Posição inicial da Maça 
+let velocidadeX =  0;  //Velocidade inicial de Y
+let velocidadeY = 0;    //Velocidade inicial de Y
+let snakeX = 10;         //Ponto inicial X da Cobra
+let snakeY = 15;          //Ponto inicial Y da Cobra
+let tamanhoBlocos = 20;    //Tamanho dos blocos em pixel
+let numeroBlocos = 30;    //Quantidade de blocos
+let appleX = 15;        // Posição inicial X da Maça 
+let appleY = 15;      // Posição inicial Y da Maça
 
-let trail = [];
-tamanhoSnake= 5;
+let trail = [];      
+let tamanhoSnake;
 
 function game () {
 
@@ -48,55 +52,82 @@ function game () {
                 ctx.fillRect(i,0,1,stage.height);
                 }
 
-    ctx.fillStyle = "red";                  // Maçã
-    ctx.fillRect(redPointX*tamanhoBlocos+1, redPointY*tamanhoBlocos+1, tamanhoBlocos-1,tamanhoBlocos-1);
+    ctx.fillStyle = "red";                  // Apple
+    ctx.fillRect(appleX*tamanhoBlocos+1, appleY*tamanhoBlocos+1, tamanhoBlocos-1,tamanhoBlocos-1);
 
     ctx.fillStyle = 'green';
     for (let i = 0; i < trail.length; i++) {  // Snake cobra
         ctx.fillRect(trail[i].x*tamanhoBlocos+1, trail[i].y*tamanhoBlocos+1,
                 tamanhoBlocos-2,tamanhoBlocos-2);
-
-        if(trail[i].x == snakeX && trail[i].y == snakeY){
-            velocidadeX = velocidadeY=0;
-            tamanhoSnake =5;
+                
+        if(trail[i].x == snakeX && trail[i].y == snakeY){       //mantem a cobra parada 
+            if(velocidadeX !=0 || velocidadeY !=0){ gameOver()}
+            velocidadeX = velocidadeY = 0;
+            tamanhoSnake = 5;                                    
             
         }  
+        while(appleX==trail[i].x && appleY==trail[i].y){    //impede que a Apple seja renderizada embaixo da cobra
+            appleX = Math.floor(Math.random()*numeroBlocos);
+            appleY = Math.floor(Math.random()*numeroBlocos); 
+
+        }
     }
 
     trail.push({x:snakeX,y:snakeY})
     while (trail.length > tamanhoSnake){
         trail.shift();
     }
-    if(redPointX==snakeX && redPointY==snakeY){   //comer e renderizar a maçã em um novo local
+    if(appleX==snakeX && appleY==snakeY){   //comer e renderizar a Apple em um novo local
         tamanhoSnake++;
-        redPointX = Math.floor(Math.random()*numeroBlocos);
-        redPointY = Math.floor(Math.random()*numeroBlocos);
+        appleX = Math.floor(Math.random()*numeroBlocos);
+        appleY = Math.floor(Math.random()*numeroBlocos);
     }
+    
+    
+    
 }
 
-function keyPush (event){              //Comandos que mudam a direção da cobra
-        
-    if (event.keyCode == 37 && velocidadeX == 0) { //Left
-            velocidadeX = -vel;
-            velocidadeY = 0;
-            console.log(trail);
+    function keyPush (event){              //Comandos que mudam a direção da cobra
+
+        if(gamePaused==false){ 
             
+            if (event.keyCode == 37 && velocidadeX == 0) { //Left
+                    velocidadeX = -vel;
+                    velocidadeY = 0;
+                    
+            }
+            if (event.keyCode == 38 && velocidadeY == 0) { //up
+                velocidadeX = 0;
+                velocidadeY = -vel;
+                
+            }
+            if (event.keyCode == 39 && velocidadeX == 0) { //right
+                velocidadeX = vel;
+                velocidadeY = 0;
+                
+            }
+            if (event.keyCode == 40 && velocidadeY == 0) { //down
+                velocidadeX = 0;
+                velocidadeY = vel;
+                
+            }
+        }  
     }
-    if (event.keyCode == 38 && velocidadeY == 0) { //up
-        velocidadeX = 0;
-        velocidadeY = -vel;
+
+    
+    function gameOver () {
         
+      document.getElementById("divGameOver").style.display = "flex";
+      gamePaused=true;
     }
-    if (event.keyCode == 39 && velocidadeX == 0) { //right
-        velocidadeX = vel;
-        velocidadeY = 0;
-        
-    }
-    if (event.keyCode == 40 && velocidadeY == 0) { //down
-        velocidadeX = 0;
-        velocidadeY = vel;
-        
-    }
-        
-}
+
+        (function () {
+            function again(){
+            console.log('change')
+            document.getElementById("divGameOver").style.display = "none";
+            gamePaused=false;
+        }
+        document.getElementById('buttonPlayAgain').addEventListener('click', again, true);
+        })();
+    
 }
